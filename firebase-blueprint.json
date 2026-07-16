@@ -1,0 +1,228 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile containing role and optional shop affiliation.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["superadmin", "storeadmin", "storeemployee"] },
+        "shopId": { "type": ["string", "null"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "role", "createdAt"]
+    },
+    "Shop": {
+      "title": "Shop",
+      "description": "A single store tenant.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "address": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "disabled", "expired"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "ownerName", "phone", "email", "address", "status", "createdAt"]
+    },
+    "License": {
+      "title": "License",
+      "description": "Subscription license for a shop.",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "durationMonths": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "expired"] },
+        "createdAt": { "type": "string" },
+        "expiresAt": { "type": "string" }
+      },
+      "required": ["shopId", "durationMonths", "status", "createdAt", "expiresAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A product for sale in a specific shop.",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "barcode": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "purchasePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "quantity": { "type": "number" },
+        "minimumStock": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["shopId", "barcode", "name", "category", "purchasePrice", "salePrice", "quantity", "minimumStock", "createdAt"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "A customer of a specific shop.",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["shopId", "fullName", "phone", "createdAt"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "A completed sale transaction.",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "customerId": { "type": ["string", "null"] },
+        "totalAmount": { "type": "number" },
+        "discount": { "type": "number" },
+        "paymentType": { "type": "string", "enum": ["Cash", "Card", "Debt"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["shopId", "totalAmount", "discount", "paymentType", "createdAt"]
+    },
+    "Debt": {
+      "title": "Debt",
+      "description": "Customer debt record.",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "debtAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "remainingAmount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["shopId", "customerId", "debtAmount", "paidAmount", "remainingAmount", "createdAt", "updatedAt"]
+    },
+    "Log": {
+      "title": "System Log",
+      "description": "Activity log for shops or admins.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["admin", "shop"] },
+        "shopId": { "type": ["string", "null"] },
+        "userId": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "ip": { "type": ["string", "null"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["type", "userId", "action", "details", "createdAt"]
+    },
+    "SystemConfig": {
+      "title": "System Configuration",
+      "description": "Global settings including session locks.",
+      "type": "object",
+      "properties": {
+        "activeAdminSession": { "type": ["string", "null"] },
+        "lastAdminLogin": { "type": "string" }
+      }
+    },
+    "TelegramBotConfig": {
+      "title": "Telegram Bot Configuration",
+      "description": "Settings for the Telegram bot connection.",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" },
+        "chatId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "CustomerBotConfig": {
+      "title": "Customer Bot Configuration",
+      "description": "Settings for the customer facing Telegram bot.",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" },
+        "welcomeMessage": { "type": "string" },
+        "helpMessage": { "type": "string" },
+        "licensesText": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "AIProvidersConfig": {
+      "title": "AI Providers Configuration",
+      "description": "Custom API configurations for various AI providers (Ollama, OpenRouter, Cloudflare, etc).",
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "description": "List of AI providers"
+        },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "UserAPIKeys": {
+      "title": "User API Keys",
+      "description": "Custom API keys stored per user for Gemini API.",
+      "type": "object",
+      "properties": {
+        "keys": {
+          "type": "array",
+          "description": "List of user-configured API keys"
+        }
+      },
+      "required": ["keys"]
+    }
+  },
+  "firestore": {
+    "user_api_keys/{userId}": {
+      "schema": { "$ref": "#/entities/UserAPIKeys" },
+      "description": "Custom user-configured API keys for external services like Google Gemini."
+    },
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles including their roles."
+    },
+    "shops/{shopId}": {
+      "schema": { "$ref": "#/entities/Shop" },
+      "description": "Stores shop information."
+    },
+    "licenses/{licenseId}": {
+      "schema": { "$ref": "#/entities/License" },
+      "description": "Stores licenses for shops."
+    },
+    "products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Stores products. Shop isolation via shopId field."
+    },
+    "customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Stores customers. Shop isolation via shopId field."
+    },
+    "sales/{saleId}": {
+      "schema": { "$ref": "#/entities/Sale" },
+      "description": "Stores sales. Shop isolation via shopId field."
+    },
+    "debts/{debtId}": {
+      "schema": { "$ref": "#/entities/Debt" },
+      "description": "Stores customer debts. Shop isolation via shopId field."
+    },
+    "logs/{logId}": {
+      "schema": { "$ref": "#/entities/Log" },
+      "description": "System activity logs."
+    },
+    "config/system": {
+      "schema": { "$ref": "#/entities/SystemConfig" },
+      "description": "Global system configuration."
+    },
+    "config/telegram_bot": {
+      "schema": { "$ref": "#/entities/TelegramBotConfig" },
+      "description": "Telegram bot settings."
+    },
+    "config/customer_bot": {
+      "schema": { "$ref": "#/entities/CustomerBotConfig" },
+      "description": "Customer telegram bot settings."
+    },
+    "config/ai_providers": {
+      "schema": { "$ref": "#/entities/AIProvidersConfig" },
+      "description": "AI Providers settings."
+    }
+  }
+}

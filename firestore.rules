@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'admin1@admin.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin')
+      );
+    }
+
+    function isShopAdmin(shopId) {
+       return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.shopId == shopId;
+    }
+
+    // users
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+      allow list: if isSignedIn() && isSuperAdmin();
+      allow write: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+    }
+
+    // shops
+    match /shops/{shopId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin() || isShopAdmin(shopId);
+    }
+    
+    // license_plans
+    match /license_plans/{planId} {
+      allow read: if request.auth != null;
+      allow write: if isSuperAdmin();
+    }
+
+    // licenses
+    match /licenses/{licenseId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // products
+    match /products/{productId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+    
+    // customers
+    match /customers/{customerId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+
+    // sales
+    match /sales/{saleId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+    
+    // debts
+    match /debts/{debtId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+    
+    // purchase_orders
+    match /purchase_orders/{orderId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+    
+    // categories
+    match /categories/{categoryId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin() || isShopAdmin(request.resource.data.shopId);
+      allow update: if isSuperAdmin() || (isShopAdmin(resource.data.shopId) && isShopAdmin(request.resource.data.shopId));
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+
+    // notifications
+    match /notifications/{notifId} {
+      allow read: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow create: if isSuperAdmin();
+      allow update: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+      allow delete: if isSuperAdmin() || isShopAdmin(resource.data.shopId);
+    }
+
+    // license_transactions
+    match /license_transactions/{txId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // logs
+    match /logs/{logId} {
+      allow create: if isSignedIn();
+      allow read, delete: if isSuperAdmin();
+    }
+
+    // shop_api_keys
+    match /shop_api_keys/{shopId} {
+      allow read: if isSignedIn() && (isShopAdmin(shopId) || isSuperAdmin());
+      allow write: if isSignedIn() && (isShopAdmin(shopId) || isSuperAdmin());
+    }
+
+    // user_api_keys
+    match /user_api_keys/{userId} {
+      allow read, write: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+    }
+
+    // admin_sessions
+    match /admin_sessions/{sessionId} {
+      allow read: if isSignedIn() && (
+        isSuperAdmin() || 
+        resource == null ||
+        (resource != null && resource.data.userId == request.auth.uid)
+      );
+      allow write: if isSignedIn() && (
+        isSuperAdmin() || 
+        (request.resource != null && request.resource.data.userId == request.auth.uid) ||
+        (resource != null && resource.data.userId == request.auth.uid)
+      );
+    }
+
+    // config
+    match /config/{docId} {
+      allow read, write: if isSuperAdmin();
+    }
+  }
+}

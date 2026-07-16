@@ -1,0 +1,6 @@
+{
+  "name": "NURA",
+  "description": "Ultra Pro PWA version of NURA",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
