@@ -533,17 +533,24 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
     setError('');
     setLoading(true);
     try {
+      // First attempt: try to sign in
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
-      if (email === 'admin1@admin.com' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password')) {
-        // Automatically bootstrap admin if it doesn't exist
+      // Second attempt: if default admin credentials, try to create the account
+      if (email === 'admin1@admin.com' && password === 'admin1234' && 
+          (err.code === 'auth/user-not-found')) {
         try {
           await createUserWithEmailAndPassword(auth, 'admin1@admin.com', 'admin1234');
         } catch (createErr: any) {
-          setError('خطا در راه‌اندازی حساب پیش‌فرض: ' + createErr.message);
+          if (createErr.code === 'auth/email-already-in-use') {
+            // User already exists but password is wrong - can't auto-recover
+            setError('حساب ادمین از قبل وجود دارد اما رمز عبور اشتباه است. لطفاً از طریق گوگل (بازیابی) وارد شوید.');
+          } else {
+            setError('خطا در ساخت حساب: ' + createErr.message);
+          }
         }
       } else {
-        setError('ایمیل یا رمز عبور اشتباه است');
+        setError('ایمیل یا رمز عبور اشتباه است.');
       }
     } finally {
       setLoading(false);
