@@ -535,7 +535,7 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
-      if (email === 'admin1@admin.com' && password === 'admin1234' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential')) {
+      if (email === 'admin1@admin.com' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password')) {
         // Automatically bootstrap admin if it doesn't exist
         try {
           await createUserWithEmailAndPassword(auth, 'admin1@admin.com', 'admin1234');
@@ -673,16 +673,14 @@ export default function App() {
           }
 
           if (userData.role === 'superadmin') {
-              logEvent({
-                type: 'admin',
+              logEvent('admin', {
                 userId: authUser.uid,
                 userEmail: authUser.email!,
                 action: 'LOGIN',
                 details: 'SuperAdmin entered the system frontend'
               });
           } else if (userData.role === 'storeadmin') {
-              logEvent({
-                type: 'shop',
+              logEvent('shop', {
                 shopId: userData.shopId,
                 userId: authUser.uid,
                 userEmail: authUser.email!,
