@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth, db } from '../../firebase';
+import { auth, db } from '../firebase';
 import { updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { Button, TextField, Card } from '../../components';
