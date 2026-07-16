@@ -1,17 +1,13 @@
 // Safe Firebase module with mock fallback when not configured
-// This prevents the app from crashing when Firebase is not set up
-
-type MockFirestore = { _mock: true };
-type MockAuth = { _mock: true; onAuthStateChanged: (cb: (user: any) => void) => () => void };
 
 let db: any = null;
 let auth: any = null;
 let app: any = null;
+let firebaseConfig: any = { apiKey: '', projectId: '' };
 
 // Try to initialize Firebase
 try {
-  // Dynamic import to avoid crashing if firebase isn't available
-  const firebaseConfig = {
+  firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
@@ -41,8 +37,8 @@ if (!auth) {
   auth = {
     _mock: true,
     onAuthStateChanged: (cb: (user: any) => void) => {
-      cb(null); // No user
-      return () => {}; // Unsubscribe function
+      cb(null);
+      return () => {};
     },
     currentUser: null,
     signInWithEmailAndPassword: async () => { throw new Error('Firebase not configured'); },
@@ -51,7 +47,7 @@ if (!auth) {
   };
 }
 
-// Mock firestore that silently ignores all operations
+// Mock firestore
 if (!db) {
   db = {
     _mock: true,
@@ -73,4 +69,4 @@ export async function logEvent(eventType: string, details: any = {}) {
   console.log('[Log]', eventType, details);
 }
 
-export { app, db, auth };
+export { app, db, auth, firebaseConfig };
