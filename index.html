@@ -22,7 +22,56 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/nura/icons/icon-152.png" />
 
     <title>NURA — حسابداری هوشمند</title>
-    {{SPLASH_STYLE}}
+    <style>
+      /* Splash screen shown while app loads */
+      #splash {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        transition: opacity 0.5s ease;
+      }
+      #splash.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #splash .logo {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        color: white;
+        font-family: sans-serif;
+        margin-bottom: 16px;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      #splash .title {
+        color: white;
+        font-family: sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        opacity: 0.9;
+      }
+      #splash .subtitle {
+        color: rgba(255,255,255,0.6);
+        font-family: sans-serif;
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+    </style>
   </head>
   <body>
     <div id="splash">
@@ -31,8 +80,7 @@
       <div class="subtitle">حسابداری هوشمند فروشگاهی</div>
     </div>
     <div id="root"></div>
-    <script type="module" crossorigin src="/nura/assets/index-Du5sTxGG.js"></script>
-    <link rel="stylesheet" crossorigin href="/nura/assets/index-BixhYWrO.css" />
+    <script type="module" src="/src/main.tsx"></script>
     <script>
       window.addEventListener('load', () => {
         setTimeout(() => {
