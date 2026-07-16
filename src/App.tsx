@@ -759,23 +759,7 @@ export default function App() {
     return <Login isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />;
   }
 
-  // Mandatory security credentials check for SuperAdmins using defaults
-  if (user.role === 'superadmin' && (user.email === 'admin1@admin.com' || !user.hasChangedCredentials)) {
-    return (
-      <ToastProvider>
-        <div className={`min-h-screen flex items-center justify-center p-6 transition-colors ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-          <AdminCredentialsSecurator 
-            user={user} 
-            onDone={(newEmail) => {
-              setUser(prev => prev ? { ...prev, email: newEmail, hasChangedCredentials: true } : null);
-            }} 
-            isDarkMode={isDarkMode} 
-            setIsDarkMode={setIsDarkMode}
-          />
-        </div>
-      </ToastProvider>
-    );
-  }
+  // Removed mandatory security credentials check
 
   return (
     <ToastProvider>
