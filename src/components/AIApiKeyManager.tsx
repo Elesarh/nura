@@ -1,6 +1,12 @@
 // AI API Key Manager component stub
 import React from 'react';
 
+export interface APIKey {
+  key: string;
+  model: string;
+  name?: string;
+}
+
 export function AIApiKeyManager({ keys, onKeysChange }: any) {
   return (
     <div className="space-y-4">
@@ -14,3 +20,5 @@ export function AIApiKeyManager({ keys, onKeysChange }: any) {
     </div>
   );
 }
+
+export default AIApiKeyManager;
