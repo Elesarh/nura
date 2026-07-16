@@ -32,13 +32,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Copy PWA files to dist
+      - name: Copy PWA and SPA files to dist
         run: |
           cp -r public/icons dist/ 2>/dev/null || true
           cp public/manifest.json dist/
           cp public/service-worker.js dist/
           cp public/offline.html dist/ 2>/dev/null || true
           cp public/offline-image.png dist/ 2>/dev/null || true
+          # Copy 404.html for SPA routing on GitHub Pages
+          cp public/404.html dist/ 2>/dev/null || true
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
