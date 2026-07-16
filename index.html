@@ -2,26 +2,50 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#4F46E5" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>NURA</title>
-    <script>
-      if (typeof window !== 'undefined' && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-        window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject = function () {};
-      }
-    </script>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NURA" />
+    <meta name="application-name" content="NURA" />
+    <meta name="msapplication-TileColor" content="#4F46E5" />
+    <meta name="msapplication-TileImage" content="/nura/icons/icon-144.png" />
+    <meta property="og:title" content="NURA — حسابداری هوشمند فروشگاهی" />
+    <meta property="og:description" content="سیستم حسابداری هوشمند با دستیار هوش مصنوعی" />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="/nura/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/nura/icons/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/nura/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/nura/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/nura/icons/icon-152.png" />
+
+    <title>NURA — حسابداری هوشمند</title>
+    {{SPLASH_STYLE}}
   </head>
   <body>
+    <div id="splash">
+      <div class="logo">N</div>
+      <div class="title">NURA</div>
+      <div class="subtitle">حسابداری هوشمند فروشگاهی</div>
+    </div>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" crossorigin src="/nura/assets/index-Du5sTxGG.js"></script>
+    <link rel="stylesheet" crossorigin href="/nura/assets/index-BixhYWrO.css" />
     <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          document.getElementById('splash')?.classList.add('hidden');
+        }, 800);
+      });
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/service-worker.js");
+        navigator.serviceWorker.register("/nura/service-worker.js", { scope: "/nura/" }).then(reg => {
+          console.log("[PWA] SW registered:", reg.scope);
+        }).catch(err => {
+          console.error("[PWA] SW failed:", err);
+        });
       }
     </script>
   </body>
 </html>
-
