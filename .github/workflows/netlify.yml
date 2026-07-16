@@ -1,0 +1,49 @@
+name: Deploy NURA to Netlify
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Copy PWA and static files to dist
+        run: |
+          cp public/_redirects dist/
+          cp -r public/icons dist/ 2>/dev/null || true
+          cp public/manifest.json dist/
+          cp public/service-worker.js dist/
+          cp public/offline.html dist/ 2>/dev/null || true
+          cp public/offline-image.png dist/ 2>/dev/null || true
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: ./dist
+          production-branch: master
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
