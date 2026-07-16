@@ -1,72 +1,42 @@
-// Safe Firebase module with mock fallback when not configured
-// Note: No top-level await - fully synchronous initialization
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, collection, doc, setDoc, serverTimestamp, query, where, orderBy, limit, getDocs, deleteDoc, addDoc, onSnapshot as fsOnSnapshot } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User } from 'firebase/auth';
 
-let db: any = null;
-let auth: any = null;
-let app: any = null;
-let firebaseConfig: any = { apiKey: '', projectId: '' };
-
-// Try to initialize Firebase synchronously
-try {
-  firebaseConfig = {
-    apiKey: typeof import.meta !== 'undefined' ? import.meta.env?.VITE_FIREBASE_API_KEY || '' : '',
-    authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env?.VITE_FIREBASE_APP_ID || '',
-  };
-} catch (e) {
-  console.warn('[Firebase] Config error:', e);
-}
-
-// Create mock auth
-auth = {
-  _mock: true,
-  onAuthStateChanged: (cb: (user: any) => void) => {
-    setTimeout(() => cb(null), 0);
-    return () => {};
-  },
-  currentUser: null,
-  signInWithEmailAndPassword: async () => { throw new Error('Firebase not configured. Set VITE_FIREBASE_API_KEY'); },
-  createUserWithEmailAndPassword: async () => { throw new Error('Firebase not configured.'); },
-  signOut: async () => {},
+// Firebase configuration — hardcoded from Firebase Console
+const firebaseConfig = {
+  apiKey: "AIzaSyAxFLKZQHEYG1qxYNJioDiRxgrx-vreXwQ",
+  authDomain: "nura-test-4e93c.firebaseapp.com",
+  projectId: "nura-test-4e93c",
+  storageBucket: "nura-test-4e93c.firebasestorage.app",
+  messagingSenderId: "980243818771",
+  appId: "1:980243818771:web:677ef79ab02289340b92e6"
 };
 
-// Create mock firestore
-db = {
-  _mock: true,
-  collection: () => db,
-  doc: () => db,
-  where: () => db,
-  orderBy: () => db,
-  limit: () => db,
-  get: async () => ({ docs: [], empty: true, forEach: () => {} }),
-  getDocs: async () => ({ docs: [], empty: true, forEach: () => {} }),
-  setDoc: async () => {},
-  deleteDoc: async () => {},
-  addDoc: async () => ({ id: 'mock-id' }),
-  onSnapshot: (_path: any, onNext: any, onError?: any) => {
-    if (typeof onNext === 'function') {
-      onNext({ docs: [], empty: true, forEach: () => {} });
-    } else if (typeof onError === 'function') {
-      // Called with (onNext as query, onError as callback)
-    }
-    return () => {};
-  },
-  query: () => db,
-  where: () => db,
+// Initialize Firebase
+let app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+let db = getFirestore(app);
+let auth = getAuth(app);
+
+export {
+  app, db, auth, firebaseConfig,
+  // Re-export Firestore utilities
+  collection, doc, setDoc, serverTimestamp, query, where, orderBy, limit, getDocs, deleteDoc, addDoc, fsOnSnapshot as onSnapshot,
+  // Re-export Auth utilities
+  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
 };
+export type { User };
 
-// Try to use real Firebase if configured
-if (firebaseConfig.apiKey && firebaseConfig.projectId) {
-  // Dynamic import will happen when auth/db is first used
-  // For now, the mock handles everything gracefully
-  console.log('[Firebase] Config found, will initialize on first use');
-}
-
+// Log events to Firestore for admin monitoring
 export async function logEvent(eventType: string, details: any = {}) {
-  console.log('[Log]', eventType, details);
+  try {
+    const logRef = doc(collection(db, 'logs'));
+    await setDoc(logRef, {
+      type: eventType,
+      details,
+      timestamp: serverTimestamp(),
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+    });
+  } catch (e) {
+    console.warn('[Log] Failed:', e);
+  }
 }
-
-export { app, db, auth, firebaseConfig };
