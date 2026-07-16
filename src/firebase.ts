@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 
 // Firebase configuration - loaded from env vars or firebase applet config
@@ -30,5 +30,26 @@ function initFirebase() {
 }
 
 initFirebase();
+
+// Log events to Firestore for admin monitoring
+export async function logEvent(eventType: string, details: any = {}) {
+  if (!db) return;
+  try {
+    const logRef = doc(collection(db, 'logs'));
+    await setDoc(logRef, {
+      type: eventType,
+      details,
+      timestamp: serverTimestamp(),
+      userAgent: navigator.userAgent,
+    });
+  } catch (e) {
+    console.warn('Failed to log event:', e);
+  }
+}
+
+// Helper to get a Firestore collection reference (avoid unused import)
+function collection(db: Firestore, path: string) {
+  return { db, path };
+}
 
 export { app, db, auth, firebaseConfig };
