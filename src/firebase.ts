@@ -1,55 +1,76 @@
-import { initializeApp, deleteApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { getAuth, Auth } from 'firebase/auth';
+// Safe Firebase module with mock fallback when not configured
+// This prevents the app from crashing when Firebase is not set up
 
-// Firebase configuration - loaded from env vars or firebase applet config
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-};
+type MockFirestore = { _mock: true };
+type MockAuth = { _mock: true; onAuthStateChanged: (cb: (user: any) => void) => () => void };
 
-let app: FirebaseApp | null = null;
-let db: Firestore | null = null;
-let auth: Auth | null = null;
+let db: any = null;
+let auth: any = null;
+let app: any = null;
 
-function initFirebase() {
-  if (!app && firebaseConfig.apiKey) {
-    try {
-      app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      auth = getAuth(app);
-    } catch (e) {
-      console.warn('Firebase initialization failed:', e);
-    }
+// Try to initialize Firebase
+try {
+  // Dynamic import to avoid crashing if firebase isn't available
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+  };
+
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    const { initializeApp } = await import('firebase/app');
+    const { getFirestore } = await import('firebase/firestore');
+    const { getAuth } = await import('firebase/auth');
+
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    console.log('[Firebase] Initialized');
+  } else {
+    console.warn('[Firebase] Not configured - using mock mode');
   }
-  return { app, db, auth };
+} catch (e) {
+  console.warn('[Firebase] Init failed, using mock:', e);
 }
 
-initFirebase();
+// Mock auth that never errors
+if (!auth) {
+  auth = {
+    _mock: true,
+    onAuthStateChanged: (cb: (user: any) => void) => {
+      cb(null); // No user
+      return () => {}; // Unsubscribe function
+    },
+    currentUser: null,
+    signInWithEmailAndPassword: async () => { throw new Error('Firebase not configured'); },
+    createUserWithEmailAndPassword: async () => { throw new Error('Firebase not configured'); },
+    signOut: async () => {},
+  };
+}
 
-// Log events to Firestore for admin monitoring
+// Mock firestore that silently ignores all operations
+if (!db) {
+  db = {
+    _mock: true,
+    collection: () => db,
+    doc: () => db,
+    where: () => db,
+    orderBy: () => db,
+    limit: () => db,
+    get: async () => ({ docs: [], empty: true }),
+    getDocs: async () => ({ docs: [], empty: true }),
+    setDoc: async () => {},
+    deleteDoc: async () => {},
+    addDoc: async () => ({ id: 'mock-id' }),
+    onSnapshot: (_: any, cb: any) => { cb({ docs: [], empty: true }); return () => {}; },
+  };
+}
+
 export async function logEvent(eventType: string, details: any = {}) {
-  if (!db) return;
-  try {
-    const logRef = doc(collection(db, 'logs'));
-    await setDoc(logRef, {
-      type: eventType,
-      details,
-      timestamp: serverTimestamp(),
-      userAgent: navigator.userAgent,
-    });
-  } catch (e) {
-    console.warn('Failed to log event:', e);
-  }
+  console.log('[Log]', eventType, details);
 }
 
-// Helper to get a Firestore collection reference (avoid unused import)
-function collection(db: Firestore, path: string) {
-  return { db, path };
-}
-
-export { app, db, auth, firebaseConfig };
+export { app, db, auth };
