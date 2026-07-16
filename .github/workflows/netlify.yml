@@ -5,10 +5,6 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
-env:
-  NODE_VERSION: 20
-  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
@@ -19,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps --ignore-scripts
@@ -27,7 +23,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Copy PWA and static files to dist
+      - name: Copy PWA and SPA files to dist
         run: |
           cp public/_redirects dist/
           cp -r public/icons dist/ 2>/dev/null || true
@@ -41,9 +37,10 @@ jobs:
         with:
           publish-dir: ./dist
           production-branch: master
-          deploy-message: "Deploy from GitHub Actions"
+          deploy-message: "Auto-deploy from GitHub"
           enable-pull-request-comment: false
           enable-commit-comment: false
+          overwrites-pull-request-comment: false
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
