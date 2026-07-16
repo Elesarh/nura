@@ -30,19 +30,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm install --legacy-peer-deps --ignore-scripts
 
       - name: Build
         run: npm run build
 
       - name: Copy PWA files to dist
         run: |
-          cp -r public/* dist/
-          cp public/service-worker.js dist/
+          cp -r public/icons dist/ 2>/dev/null || true
           cp public/manifest.json dist/
+          cp public/service-worker.js dist/
+          cp public/offline.html dist/ 2>/dev/null || true
+          cp public/offline-image.png dist/ 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
