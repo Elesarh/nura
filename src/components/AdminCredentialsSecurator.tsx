@@ -9,3 +9,5 @@ export function AdminCredentialsSecurator({ onSecure }: any) {
     </div>
   );
 }
+
+export default AdminCredentialsSecurator;
