@@ -10,20 +10,19 @@
     <meta name="apple-mobile-web-app-title" content="NURA" />
     <meta name="application-name" content="NURA" />
     <meta name="msapplication-TileColor" content="#4F46E5" />
-    <meta name="msapplication-TileImage" content="/nura/icons/icon-144.png" />
+    <meta name="msapplication-TileImage" content="/icons/icon-144.png" />
     <meta property="og:title" content="NURA — حسابداری هوشمند فروشگاهی" />
     <meta property="og:description" content="سیستم حسابداری هوشمند با دستیار هوش مصنوعی" />
     <meta property="og:type" content="website" />
 
-    <link rel="manifest" href="/nura/manifest.json" />
-    <link rel="icon" type="image/svg+xml" href="/nura/icons/icon.svg" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/nura/icons/icon-192.png" />
-    <link rel="apple-touch-icon" href="/nura/icons/icon-192.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/nura/icons/icon-152.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png" />
 
     <title>NURA — حسابداری هوشمند</title>
     <style>
-      /* Splash screen */
       #splash {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -65,14 +64,6 @@
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
       }
-      /* Error display */
-      #app-error {
-        display: none;
-        padding: 20px;
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 40px;
-      }
     </style>
   </head>
   <body>
@@ -82,34 +73,33 @@
       <div class="subtitle">حسابداری هوشمند فروشگاهی</div>
     </div>
     <div id="root"></div>
-    <div id="app-error"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Hide splash after timeout - works even if React crashes
       setTimeout(function() {
-        var s = document.getElementById('splash');
-        if (s) s.classList.add('hidden');
+        document.getElementById('splash')?.classList.add('hidden');
       }, 5000);
-
       window.addEventListener('load', function() {
         setTimeout(function() {
           document.getElementById('splash')?.classList.add('hidden');
         }, 800);
       });
-
-      // Global error handler - show error on screen
       window.addEventListener('error', function(e) {
         document.getElementById('splash')?.classList.add('hidden');
-        var errDiv = document.getElementById('app-error');
-        if (errDiv) {
-          errDiv.style.display = 'block';
-          errDiv.innerHTML = '<h3>خطا در بارگذاری برنامه</h3><p>' + (e.message || 'خطای ناشناخته') + '</p><button onclick="location.reload()">تلاش مجدد</button>';
-        }
+        var errDiv = document.getElementById('app-error') || (function() {
+          var d = document.createElement('div');
+          d.id = 'app-error';
+          d.style.cssText = 'padding:20px;font-family:sans-serif;text-align:center;margin-top:40px;color:#333';
+          document.body.appendChild(d);
+          return d;
+        })();
+        errDiv.innerHTML = '<h2>⚠️ خطا</h2><p style="color:red">' + (e.message || 'خطای ناشناخته') + '</p><button onclick="location.reload()" style="padding:10px 20px;margin-top:10px;border:none;border-radius:8px;background:#4F46E5;color:white;cursor:pointer">تلاش مجدد</button>';
       });
-
-      // Service Worker
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/nura/service-worker.js", { scope: "/nura/" });
+        navigator.serviceWorker.register("/service-worker.js").then(reg => {
+          console.log("[PWA] SW registered:", reg.scope);
+        }).catch(err => {
+          console.error("[PWA] SW failed:", err);
+        });
       }
     </script>
   </body>

@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react()],
-    base: '/nura/',
+    base: '/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

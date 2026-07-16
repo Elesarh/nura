@@ -2,18 +2,18 @@ const CACHE_NAME = 'nura-cache-v3';
 const DYNAMIC_CACHE = 'nura-dynamic-v3';
 
 const STATIC_ASSETS = [
-  '/nura/',
-  '/nura/index.html',
-  '/nura/manifest.json',
-  '/nura/offline.html',
-  '/nura/icons/icon-72.png',
-  '/nura/icons/icon-96.png',
-  '/nura/icons/icon-128.png',
-  '/nura/icons/icon-144.png',
-  '/nura/icons/icon-152.png',
-  '/nura/icons/icon-192.png',
-  '/nura/icons/icon-384.png',
-  '/nura/icons/icon-512.png',
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/offline.html',
+  '/icons/icon-72.png',
+  '/icons/icon-96.png',
+  '/icons/icon-128.png',
+  '/icons/icon-144.png',
+  '/icons/icon-152.png',
+  '/icons/icon-192.png',
+  '/icons/icon-384.png',
+  '/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,19 +39,17 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
 
-  // For navigation requests - always try network first, fallback to index.html (SPA)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).catch(() => {
-        return caches.match('/nura/index.html').then(cached => {
-          return cached || caches.match('/nura/offline.html');
+        return caches.match('/index.html').then(cached => {
+          return cached || caches.match('/offline.html');
         });
       })
     );
     return;
   }
 
-  // For assets - cache first
   event.respondWith(
     caches.match(request).then(cached => {
       return cached || fetch(request).then(response => {
@@ -65,14 +63,13 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notifications
 self.addEventListener('push', (event) => {
   const data = event.data?.json() || { title: 'NURA', body: 'به‌روزرسانی جدید!' };
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/nura/icons/icon-192.png',
-      badge: '/nura/icons/icon-72.png',
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-72.png',
       vibrate: [100, 50, 100],
     })
   );

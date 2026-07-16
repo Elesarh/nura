@@ -23,14 +23,12 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Copy PWA and SPA files to dist
+      - name: Copy PWA and static files to dist
         run: |
           cp public/_redirects dist/
           cp -r public/icons dist/ 2>/dev/null || true
           cp public/manifest.json dist/
           cp public/service-worker.js dist/
-          cp public/offline.html dist/ 2>/dev/null || true
-          cp public/offline-image.png dist/ 2>/dev/null || true
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3
@@ -38,9 +36,6 @@ jobs:
           publish-dir: ./dist
           production-branch: master
           deploy-message: "Auto-deploy from GitHub"
-          enable-pull-request-comment: false
-          enable-commit-comment: false
-          overwrites-pull-request-comment: false
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
