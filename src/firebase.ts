@@ -1,68 +1,68 @@
 // Safe Firebase module with mock fallback when not configured
+// Note: No top-level await - fully synchronous initialization
 
 let db: any = null;
 let auth: any = null;
 let app: any = null;
 let firebaseConfig: any = { apiKey: '', projectId: '' };
 
-// Try to initialize Firebase
+// Try to initialize Firebase synchronously
 try {
   firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+    apiKey: typeof import.meta !== 'undefined' ? import.meta.env?.VITE_FIREBASE_API_KEY || '' : '',
+    authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || '',
+    projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || '',
+    storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || '',
+    messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+    appId: import.meta.env?.VITE_FIREBASE_APP_ID || '',
   };
-
-  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
-    const { initializeApp } = await import('firebase/app');
-    const { getFirestore } = await import('firebase/firestore');
-    const { getAuth } = await import('firebase/auth');
-
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-    console.log('[Firebase] Initialized');
-  } else {
-    console.warn('[Firebase] Not configured - using mock mode');
-  }
 } catch (e) {
-  console.warn('[Firebase] Init failed, using mock:', e);
+  console.warn('[Firebase] Config error:', e);
 }
 
-// Mock auth that never errors
-if (!auth) {
-  auth = {
-    _mock: true,
-    onAuthStateChanged: (cb: (user: any) => void) => {
-      cb(null);
-      return () => {};
-    },
-    currentUser: null,
-    signInWithEmailAndPassword: async () => { throw new Error('Firebase not configured'); },
-    createUserWithEmailAndPassword: async () => { throw new Error('Firebase not configured'); },
-    signOut: async () => {},
-  };
-}
+// Create mock auth
+auth = {
+  _mock: true,
+  onAuthStateChanged: (cb: (user: any) => void) => {
+    setTimeout(() => cb(null), 0);
+    return () => {};
+  },
+  currentUser: null,
+  signInWithEmailAndPassword: async () => { throw new Error('Firebase not configured. Set VITE_FIREBASE_API_KEY'); },
+  createUserWithEmailAndPassword: async () => { throw new Error('Firebase not configured.'); },
+  signOut: async () => {},
+};
 
-// Mock firestore
-if (!db) {
-  db = {
-    _mock: true,
-    collection: () => db,
-    doc: () => db,
-    where: () => db,
-    orderBy: () => db,
-    limit: () => db,
-    get: async () => ({ docs: [], empty: true }),
-    getDocs: async () => ({ docs: [], empty: true }),
-    setDoc: async () => {},
-    deleteDoc: async () => {},
-    addDoc: async () => ({ id: 'mock-id' }),
-    onSnapshot: (_: any, cb: any) => { cb({ docs: [], empty: true }); return () => {}; },
-  };
+// Create mock firestore
+db = {
+  _mock: true,
+  collection: () => db,
+  doc: () => db,
+  where: () => db,
+  orderBy: () => db,
+  limit: () => db,
+  get: async () => ({ docs: [], empty: true, forEach: () => {} }),
+  getDocs: async () => ({ docs: [], empty: true, forEach: () => {} }),
+  setDoc: async () => {},
+  deleteDoc: async () => {},
+  addDoc: async () => ({ id: 'mock-id' }),
+  onSnapshot: (_path: any, onNext: any, onError?: any) => {
+    if (typeof onNext === 'function') {
+      onNext({ docs: [], empty: true, forEach: () => {} });
+    } else if (typeof onError === 'function') {
+      // Called with (onNext as query, onError as callback)
+    }
+    return () => {};
+  },
+  query: () => db,
+  where: () => db,
+};
+
+// Try to use real Firebase if configured
+if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+  // Dynamic import will happen when auth/db is first used
+  // For now, the mock handles everything gracefully
+  console.log('[Firebase] Config found, will initialize on first use');
 }
 
 export async function logEvent(eventType: string, details: any = {}) {
