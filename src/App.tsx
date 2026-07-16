@@ -1,5 +1,5 @@
 import { translateError } from './lib/errorTranslator';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router';
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router';
 import { useEffect, useState, ReactNode } from 'react';
 import React from 'react';
 import { auth, db } from './firebase';
