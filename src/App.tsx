@@ -1,5 +1,5 @@
 import { translateError } from './lib/errorTranslator';
-import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, createHashRouter, RouterProvider, createBrowserRouter } from 'react-router';
 import { useEffect, useState, ReactNode } from 'react';
 import React from 'react';
 import { auth, db } from './firebase';
@@ -632,7 +632,30 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
 
 import { useAdminSession } from './useAdminSession';
 
+function AppRouter() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Handle SPA redirect from 404.html
+    const savedPath = sessionStorage.getItem('nura_redirect');
+    if (savedPath && savedPath !== '/') {
+      sessionStorage.removeItem('nura_redirect');
+      navigate(savedPath, { replace: true });
+    }
+  }, [navigate]);
+
+  return <AppContent />;
+}
+
 export default function App() {
+  return (
+    <Router>
+      <AppRouter />
+    </Router>
+  );
+}
+
+function AppContent() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -776,8 +799,7 @@ export default function App() {
            </Card>
         </div>
       )}
-      <Router>
-        <Layout user={user} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}>
+      <Layout user={user} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}>
           <Routes>
             {user.role === 'superadmin' ? (
               <>
@@ -803,7 +825,6 @@ export default function App() {
             )}
           </Routes>
         </Layout>
-      </Router>
     </ToastProvider>
   );
 }

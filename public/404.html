@@ -4,16 +4,14 @@
   <meta charset="utf-8">
   <title>NURA</title>
   <script>
-    // GitHub Pages SPA redirect — preserves the full path
-    sessionStorage.redirect = location.href;
+    // Save the full current path before redirect
+    // The SPA will read this and redirect to the correct route
+    sessionStorage.setItem('nura_redirect', location.pathname.replace('/nura', '') + location.search);
+    // Then go to the SPA root
+    location.replace('/nura/');
   </script>
-  <meta http-equiv="refresh" content="0;URL='/nura/'">
 </head>
 <body>
   <p>در حال انتقال...</p>
-  <script>
-    // Fallback if meta refresh doesn't work
-    window.location.replace('/nura/');
-  </script>
 </body>
 </html>
