@@ -6,6 +6,6 @@ const errorMap: Record<string, string> = {
   'auth/weak-password': 'رمز عبور باید حداقل ۶ کاراکتر باشد',
 };
 
-export function translateFirebaseError(code: string): string {
+export function translateError(code: string): string {
   return errorMap[code] || code || 'خطای ناشناخته';
 }
