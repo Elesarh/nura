@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { auth, db } from '../firebase';
 import { updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { Button, TextField, Card } from './components';
+import { Button, TextField, Card } from '../components';
 import { Shield, Mail, Lock, CheckCircle } from 'lucide-react';
 
 interface Props {
