@@ -41,6 +41,7 @@ jobs:
           cp -r public/icons dist/ 2>/dev/null || true
           cp public/manifest.json dist/
           cp public/service-worker.js dist/
+          cp capacitor.config.json dist/
 
       - name: Install Capacitor
         run: npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
@@ -86,6 +87,16 @@ jobs:
           sed -i "s/versionName \"[^\"]*\"/versionName \"$VERSION_TAG\"/" app/build.gradle
           sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" app/build.gradle
           echo "Version: $VERSION_TAG, Code: $VERSION_CODE"
+
+      - name: Fix signing config in build.gradle
+        run: |
+          cd android
+          GRADLE_FILE="app/build.gradle"
+          # Remove any previous signing config we added
+          sed -i '/nura-debug.keystore/d' "$GRADLE_FILE" 2>/dev/null || true
+          sed -i '/nura123/d' "$GRADLE_FILE" 2>/dev/null || true
+          # Add signing config INSIDE the android block (before closing })
+          sed -i '/^android {/a\    signingConfigs {\n        debug {\n            storeFile file("../../keystore/nura-debug.keystore")\n            storePassword "nura123"\n            keyAlias "nura"\n            keyPassword "nura123"\n        }\n    }' "$GRADLE_FILE" 2>/dev/null || true
 
       - name: Build Debug APK
         working-directory: ./android

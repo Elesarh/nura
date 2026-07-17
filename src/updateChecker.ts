@@ -1,6 +1,6 @@
 // Read version from Capacitor config injected at build time
 // Fallback: fetch version from the app's own manifest
-const FALLBACK_VERSION = '0.1.4';
+const FALLBACK_VERSION = '0.1.5';
 
 export async function getAppVersion(): Promise<string> {
   try {
@@ -40,10 +40,22 @@ export async function checkForUpdates(): Promise<UpdateInfo | null> {
     const release = await response.json();
     const latestVersion = (release.tag_name || release.name).replace(/^v/, '');
 
-    if (latestVersion && latestVersion > currentVersion) {
-      const apkAsset = release.assets?.find((a: any) =>
-        a.name?.endsWith('.apk') || a.content_type === 'application/vnd.android.package-archive'
-      );
+    if (latestVersion) {
+      // Proper semver comparison
+      const parseVer = (v: string) => v.split('.').map(Number);
+      const latestParts = parseVer(latestVersion);
+      const currentParts = parseVer(currentVersion);
+      let isNewer = false;
+      for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
+        const l = latestParts[i] || 0;
+        const c = currentParts[i] || 0;
+        if (l > c) { isNewer = true; break; }
+        if (l < c) { isNewer = false; break; }
+      }
+      if (isNewer) {
+        const apkAsset = release.assets?.find((a: any) =>
+          a.name?.endsWith('.apk') || a.content_type === 'application/vnd.android.package-archive'
+        );
 
       return {
         hasUpdate: true,
