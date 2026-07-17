@@ -1,0 +1,76 @@
+name: Build NURA Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts
+
+      - name: Build web
+        run: npm run build
+
+      - name: Copy PWA files to dist
+        run: |
+          cp public/_redirects dist/ 2>/dev/null || true
+          cp -r public/icons dist/ 2>/dev/null || true
+          cp public/manifest.json dist/
+          cp public/service-worker.js dist/
+
+      - name: Install Capacitor
+        run: |
+          npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps --ignore-scripts
+
+      - name: Setup Capacitor
+        run: |
+          npx cap init NURA com.nura.app --web-dir dist --yes
+          npx cap copy android
+
+      - name: Build APK
+        working-directory: ./android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: nura-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+
+      - name: Build Release APK
+        if: secrets.SIGNING_KEY != ''
+        working-directory: ./android
+        run: |
+          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > release.jks 2>/dev/null || true
+          [ -f release.jks ] && ./gradlew assembleRelease || echo "No signing key, skipping release"
+          rm -f release.jks
+
+      - name: Upload Release APK
+        if: secrets.SIGNING_KEY != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: nura-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          retention-days: 7
