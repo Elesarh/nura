@@ -19,8 +19,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps --ignore-scripts
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
       - name: Build
         run: npm run build
@@ -34,10 +32,31 @@ jobs:
 
       - name: Deploy to Netlify
         run: |
-          # Install Netlify CLI
-          npm install -g netlify-cli
-          # Deploy directly
-          npx netlify deploy --dir=dist --prod --message "Auto-deploy from GitHub"
+          # Deploy using Netlify's REST API directly
+          ZIP_FILE="/tmp/nura-deploy.zip"
+          cd dist
+          # Create a zip of the dist folder
+          zip -r $ZIP_FILE . -q
+          # Get upload URL from Netlify API
+          UPLOAD_URL=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.NETLIFY_AUTH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.netlify.com/api/v1/sites/${{ secrets.NETLIFY_SITE_ID }}/deploys" | \
+            python3 -c "import sys,json; print(json.load(sys.stdin).get('required', [{}])[0].get('upload_url',''))" 2>/dev/null || echo "")
+          if [ -z "$UPLOAD_URL" ]; then
+            # Fallback: direct deploy
+            curl -s -X POST \
+              -H "Authorization: Bearer ${{ secrets.NETLIFY_AUTH_TOKEN }}" \
+              -H "Content-Type: application/zip" \
+              --data-binary @$ZIP_FILE \
+              "https://api.netlify.com/api/v1/sites/${{ secrets.NETLIFY_SITE_ID }}/deploys"
+          else
+            curl -s -X PUT \
+              -H "Content-Type: application/zip" \
+              --data-binary @$ZIP_FILE \
+              "$UPLOAD_URL"
+          fi
+          echo "Deploy complete"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
