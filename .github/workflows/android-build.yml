@@ -96,7 +96,7 @@ jobs:
         with:
           files: android/app/build/outputs/apk/debug/*.apk
           name: NURA ${{ github.ref_name }}
-          body: |
-            🚀 **NURA** نسخه ${{ github.ref_name }}
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body: 🚀 NURA نسخه ${{ github.ref_name }}
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
