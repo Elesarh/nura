@@ -604,11 +604,16 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
         {error && <div className="mb-6 relative z-10"><ErrorWidget message={error} /></div>}
         <form onSubmit={handleLogin} className="space-y-6 relative z-10">
           <TextField label="ایمیل مدیریت" type="email" value={email} onChange={(e:any)=>setEmail(e.target.value)} required />
-          <div className="relative">
-            <TextField label="رمز عبور مدیریت" type={showPassword ? 'text' : 'password'} value={password} onChange={(e:any)=>setPassword(e.target.value)} required />
-            <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-3 top-[56px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">رمز عبور مدیریت</label>
+            <div className="relative">
+              <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e:any)=>setPassword(e.target.value)} required
+                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white border-gray-300" />
+              <button type="button" onClick={()=>setShowPassword(!showPassword)}
+                className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           
           <div className="pt-4 flex flex-col gap-3">

@@ -5,6 +5,6 @@
   "server": {
     "androidScheme": "https"
   },
-  "version": "0.1.0",
-  "versionCode": 1
+  "version": "0.1.2",
+  "versionCode": 2
 }

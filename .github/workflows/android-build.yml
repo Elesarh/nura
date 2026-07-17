@@ -68,9 +68,17 @@ jobs:
       - name: Set app version in Android
         run: |
           cd android
-          # Set versionName to 0.1.0 and versionCode to 1
-          sed -i 's/versionName "[^"]*"/versionName "0.1.0"/' app/build.gradle
-          sed -i 's/versionCode [0-9]*/versionCode 1/' app/build.gradle
+          # Extract version from tag (e.g., v0.1.2 -> 0.1.2)
+          VERSION_TAG="${GITHUB_REF_NAME#v}"
+          # Convert version to versionCode (e.g., 0.1.2 -> 102)
+          MAJOR=$(echo "$VERSION_TAG" | cut -d. -f1)
+          MINOR=$(echo "$VERSION_TAG" | cut -d. -f2)
+          PATCH=$(echo "$VERSION_TAG" | cut -d. -f3)
+          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          # Update app/build.gradle
+          sed -i "s/versionName \"[^\"]*\"/versionName \"$VERSION_TAG\"/" app/build.gradle
+          sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" app/build.gradle
+          echo "Version: $VERSION_TAG, Code: $VERSION_CODE"
 
       - name: Build Debug APK
         working-directory: ./android
