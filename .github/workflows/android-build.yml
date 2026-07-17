@@ -4,10 +4,15 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
+    tags:
+      - 'v*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
 
     steps:
       - uses: actions/checkout@v4
@@ -63,22 +68,16 @@ jobs:
           echo "    }" >> "$GRADLE_FILE"
           echo "}" >> "$GRADLE_FILE"
 
-      - name: Get version from tag or default
-        id: version
-        run: |
-          VERSION="v0.1.0"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Build Debug APK
         working-directory: ./android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug -x lint --no-daemon
 
-      - name: Upload APK as workflow artifact
+      - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NURA-v0.1.0
+          name: NURA-APK
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 30
 
@@ -87,13 +86,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: android/app/build/outputs/apk/debug/*.apk
-          tag_name: ${{ steps.version.outputs.version }}
-          name: NURA ${{ steps.version.outputs.version }}
+          name: NURA ${{ github.ref_name }}
           body: |
-            🚀 NURA نسخه ${{ steps.version.outputs.version }}
+            🚀 **NURA** نسخه ${{ github.ref_name }}
             
-            - افزودن دکمه چشم برای نمایش/مخفی کردن رمز عبور
-            - سیستم بررسی آپدیت خودکار
-            - بهبود تجربه کاربری
-          draft: false
-          prerelease: false
+            آخرین تغییرات:
+            - آیکون چشم در فیلد رمز عبور (وسط‌چین شده)
+            - نمایش صحیح ورژن اپ
+            - بهبود سیستم آپدیت خودکار
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
