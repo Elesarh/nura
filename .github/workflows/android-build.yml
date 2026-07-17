@@ -52,6 +52,9 @@ jobs:
       - name: Copy web to Android
         run: npx cap copy android
 
+      - name: Copy custom app icons to Android
+        run: python3 scripts/copy-android-icons.py
+
       - name: Prepare Gradle fixes
         run: python3 scripts/fix-android-build.py
 
