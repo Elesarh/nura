@@ -1,0 +1,10 @@
+{
+  "appId": "com.nura.app",
+  "appName": "NURA",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "version": "0.1.0",
+  "versionCode": 1
+}
