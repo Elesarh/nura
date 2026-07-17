@@ -606,7 +606,7 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
           <TextField label="ایمیل مدیریت" type="email" value={email} onChange={(e:any)=>setEmail(e.target.value)} required />
           <div className="relative">
             <TextField label="رمز عبور مدیریت" type={showPassword ? 'text' : 'password'} value={password} onChange={(e:any)=>setPassword(e.target.value)} required />
-            <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+            <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-3 top-[56px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>

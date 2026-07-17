@@ -68,6 +68,13 @@ jobs:
           echo "    }" >> "$GRADLE_FILE"
           echo "}" >> "$GRADLE_FILE"
 
+      - name: Set app version in Android
+        run: |
+          cd android
+          # Set versionName to 0.1.0 and versionCode to 1
+          sed -i 's/versionName "[^"]*"/versionName "0.1.0"/' app/build.gradle
+          sed -i 's/versionCode [0-9]*/versionCode 1/' app/build.gradle
+
       - name: Build Debug APK
         working-directory: ./android
         run: |
