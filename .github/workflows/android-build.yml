@@ -52,6 +52,9 @@ jobs:
       - name: Copy web to Android
         run: npx cap copy android
 
+      - name: Set Android app icon
+        run: python3 scripts/set-android-icon.py android/app/src/main/res public/icons/icon-192.png
+
       - name: Fix Kotlin duplicates + signing
         run: |
           cd android
