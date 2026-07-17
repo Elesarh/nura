@@ -27,7 +27,7 @@ import ChatView from './views/store/ChatView';
 import OrdersView from './views/store/OrdersView';
 import ShopProfileModal from './ShopProfileModal';
 import AdminCredentialsSecurator from './components/AdminCredentialsSecurator';
-import { UpdateBanner } from './components/UpdateBanner';
+import { UpdateModal } from './components/UpdateModal';
 import { ToastProvider, useToast } from './ToastContext';
 
 // Layout with Sidebar
@@ -798,7 +798,7 @@ function AppContent() {
 
   return (
     <ToastProvider>
-      {user && <UpdateBanner />}
+      {user && <UpdateModal />}
       {pendingDevice && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md p-4 animate-in slide-in-from-top-10">
            <Card className="p-6 bg-white dark:bg-slate-900 border-2 border-amber-500 shadow-2xl shadow-amber-500/20 text-center rounded-[32px]">
