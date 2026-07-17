@@ -7,7 +7,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWith
 import { doc, getDoc, setDoc, collection, serverTimestamp, query, where, getDocs, orderBy, limit, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { User, Shop, Notification, Product } from './types';
 import { LoadingWidget, Button, TextField, Card, ErrorWidget } from './components';
-import { Menu, X, Sun, Moon, LogOut, Store as StoreIcon, Shield, User as UserIcon, Phone, Mail, Bell, AlertTriangle, History, Trash2, Plus, Activity, Package, Users, ShoppingCart, Banknote, TrendingUp, Zap, Lock, Bot, Sparkles, Settings, PackageSearch } from 'lucide-react';
+import { Menu, X, Sun, Moon, LogOut, Store as StoreIcon, Shield, User as UserIcon, Phone, Mail, Bell, AlertTriangle, History, Trash2, Plus, Activity, Package, Users, ShoppingCart, Banknote, TrendingUp, Zap, Lock, Bot, Sparkles, Settings, PackageSearch, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logEvent } from './firebase';
 
@@ -27,6 +27,7 @@ import ChatView from './views/store/ChatView';
 import OrdersView from './views/store/OrdersView';
 import ShopProfileModal from './ShopProfileModal';
 import AdminCredentialsSecurator from './components/AdminCredentialsSecurator';
+import { UpdateBanner } from './components/UpdateBanner';
 import { ToastProvider, useToast } from './ToastContext';
 
 // Layout with Sidebar
@@ -525,6 +526,7 @@ function Layout({ user, children, isDarkMode, setIsDarkMode }: { user: User, chi
 function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMode: (v: boolean) => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -602,7 +604,12 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
         {error && <div className="mb-6 relative z-10"><ErrorWidget message={error} /></div>}
         <form onSubmit={handleLogin} className="space-y-6 relative z-10">
           <TextField label="ایمیل مدیریت" type="email" value={email} onChange={(e:any)=>setEmail(e.target.value)} required />
-          <TextField label="رمز عبور مدیریت" type="password" value={password} onChange={(e:any)=>setPassword(e.target.value)} required />
+          <div className="relative">
+            <TextField label="رمز عبور مدیریت" type={showPassword ? 'text' : 'password'} value={password} onChange={(e:any)=>setPassword(e.target.value)} required />
+            <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
           
           <div className="pt-4 flex flex-col gap-3">
             <Button type="submit" className="w-full h-16 rounded-[24px] font-black shadow-xl shadow-blue-500/20 active:scale-95" disabled={loading}>
@@ -786,6 +793,7 @@ function AppContent() {
 
   return (
     <ToastProvider>
+      {user && <UpdateBanner />}
       {pendingDevice && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md p-4 animate-in slide-in-from-top-10">
            <Card className="p-6 bg-white dark:bg-slate-900 border-2 border-amber-500 shadow-2xl shadow-amber-500/20 text-center rounded-[32px]">

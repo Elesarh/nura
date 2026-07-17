@@ -63,15 +63,37 @@ jobs:
           echo "    }" >> "$GRADLE_FILE"
           echo "}" >> "$GRADLE_FILE"
 
+      - name: Get version from tag or default
+        id: version
+        run: |
+          VERSION="v0.1.0"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build Debug APK
         working-directory: ./android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug -x lint --no-daemon
 
-      - name: Upload Debug APK
+      - name: Upload APK as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NURA-Debug-APK
+          name: NURA-v0.1.0
           path: android/app/build/outputs/apk/debug/*.apk
-          retention-days: 14
+          retention-days: 30
+
+      - name: Upload APK to Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/debug/*.apk
+          tag_name: ${{ steps.version.outputs.version }}
+          name: NURA ${{ steps.version.outputs.version }}
+          body: |
+            🚀 NURA نسخه ${{ steps.version.outputs.version }}
+            
+            - افزودن دکمه چشم برای نمایش/مخفی کردن رمز عبور
+            - سیستم بررسی آپدیت خودکار
+            - بهبود تجربه کاربری
+          draft: false
+          prerelease: false
