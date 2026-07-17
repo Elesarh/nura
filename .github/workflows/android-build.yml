@@ -51,7 +51,7 @@ jobs:
       - name: Copy web to Android
         run: npx cap copy android
 
-      - name: Fix Kotlin duplicates
+      - name: Fix Kotlin duplicates + signing
         run: |
           cd android
           GRADLE_FILE="app/build.gradle"
@@ -62,6 +62,16 @@ jobs:
           echo "        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'" >> "$GRADLE_FILE"
           echo "        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'" >> "$GRADLE_FILE"
           echo "        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'" >> "$GRADLE_FILE"
+          echo "    }" >> "$GRADLE_FILE"
+          echo "}" >> "$GRADLE_FILE"
+          # Add signing config to app/build.gradle
+          echo '' >> "$GRADLE_FILE"
+          echo "android.signingConfigs {" >> "$GRADLE_FILE"
+          echo "    debug {" >> "$GRADLE_FILE"
+          echo "        storeFile file('../../keystore/nura-debug.keystore')" >> "$GRADLE_FILE"
+          echo "        storePassword 'nura123'" >> "$GRADLE_FILE"
+          echo "        keyAlias 'nura'" >> "$GRADLE_FILE"
+          echo "        keyPassword 'nura123'" >> "$GRADLE_FILE"
           echo "    }" >> "$GRADLE_FILE"
           echo "}" >> "$GRADLE_FILE"
 

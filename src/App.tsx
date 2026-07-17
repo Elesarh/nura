@@ -28,6 +28,7 @@ import OrdersView from './views/store/OrdersView';
 import ShopProfileModal from './ShopProfileModal';
 import AdminCredentialsSecurator from './components/AdminCredentialsSecurator';
 import { UpdateModal } from './components/UpdateModal';
+import { ToastListener } from './components/ToastListener';
 import { ToastProvider, useToast } from './ToastContext';
 
 // Layout with Sidebar
@@ -537,6 +538,10 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
     try {
       // First attempt: try to sign in
       await signInWithEmailAndPassword(auth, email, password);
+      // Show success toast
+      document.dispatchEvent(new CustomEvent('nura-toast', {
+        detail: { message: '✅ ورود با موفقیت انجام شد', type: 'success' }
+      }));
     } catch (err: any) {
       // Second attempt: if default admin credentials, try to create the account
       if (email === 'admin1@admin.com' && password === 'admin1234' && 
@@ -799,6 +804,7 @@ function AppContent() {
   return (
     <ToastProvider>
       {user && <UpdateModal />}
+      <ToastListener />
       {pendingDevice && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md p-4 animate-in slide-in-from-top-10">
            <Card className="p-6 bg-white dark:bg-slate-900 border-2 border-amber-500 shadow-2xl shadow-amber-500/20 text-center rounded-[32px]">

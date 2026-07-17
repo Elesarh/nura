@@ -9,3 +9,6 @@ flutter_app/build/
 flutter_app/.packages
 flutter_app/.pub/
 bun.lock
+android/
+# keep nura debug keystore
+keystore/*.keystore
