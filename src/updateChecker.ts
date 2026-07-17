@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.1.0';
+const APP_VERSION = '0.1.0';
 
 // Check for updates from GitHub releases
 const GITHUB_REPO = 'Elesarh/nura';
@@ -9,7 +9,7 @@ export async function checkForUpdates(): Promise<{ hasUpdate: boolean; version: 
     const response = await fetch(GITHUB_API);
     if (!response.ok) return null;
     const release = await response.json();
-    const latestVersion = release.tag_name || release.name;
+    const latestVersion = (release.tag_name || release.name).replace(/^v/, '');
     
     if (latestVersion && latestVersion > APP_VERSION) {
       // Find the APK asset
