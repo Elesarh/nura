@@ -29,6 +29,7 @@ import ShopProfileModal from './ShopProfileModal';
 import AdminCredentialsSecurator from './components/AdminCredentialsSecurator';
 import { UpdateModal } from './components/UpdateModal';
 import { ToastListener } from './components/ToastListener';
+import { VersionChecker } from './components/VersionChecker';
 import { ToastProvider, useToast } from './ToastContext';
 
 // Layout with Sidebar
@@ -348,6 +349,8 @@ function Layout({ user, children, isDarkMode, setIsDarkMode }: { user: User, chi
               </button>
            </div>
         )}
+
+        <VersionChecker />
       </aside>
 
       {/* Main Content Area */}
@@ -530,18 +533,16 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      // First attempt: try to sign in
       await signInWithEmailAndPassword(auth, email, password);
-      // Show success toast
-      document.dispatchEvent(new CustomEvent('nura-toast', {
-        detail: { message: '✅ ورود با موفقیت انجام شد', type: 'success' }
-      }));
+      setLoginSuccess(true);
+      setTimeout(() => setLoginSuccess(false), 3000);
     } catch (err: any) {
       // Second attempt: if default admin credentials, try to create the account
       if (email === 'admin1@admin.com' && password === 'admin1234' && 
@@ -607,6 +608,13 @@ function Login({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean, setIsDarkMo
         <p className="text-gray-500 dark:text-slate-400 mb-10 text-sm font-medium text-center relative z-10">برای دسترسی به پنل مدیریت وارد شوید</p>
 
         {error && <div className="mb-6 relative z-10"><ErrorWidget message={error} /></div>}
+        {loginSuccess && (
+          <div className="mb-6 relative z-10">
+            <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-2xl text-sm font-bold text-center border border-emerald-200 dark:border-emerald-800">
+              ✅ ورود با موفقیت انجام شد
+            </div>
+          </div>
+        )}
         <form onSubmit={handleLogin} className="space-y-6 relative z-10">
           <TextField label="ایمیل مدیریت" type="email" value={email} onChange={(e:any)=>setEmail(e.target.value)} required />
           <div className="mb-4">

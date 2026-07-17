@@ -1,23 +1,13 @@
-// Read version from Capacitor config injected at build time
-// Fallback: fetch version from the app's own manifest
 const FALLBACK_VERSION = '0.1.5';
 
 export async function getAppVersion(): Promise<string> {
   try {
-    // Try reading from capacitor.config.json (available at runtime on web)
     const resp = await fetch('/capacitor.config.json');
     if (resp.ok) {
       const config = await resp.json();
       return config.version || FALLBACK_VERSION;
     }
-  } catch {} // silent fallback
-  
-  // Try from meta tag or hardcoded
-  try {
-    const meta = document.querySelector('meta[name="app-version"]');
-    if (meta) return meta.getAttribute('content') || FALLBACK_VERSION;
   } catch {}
-  
   return FALLBACK_VERSION;
 }
 
@@ -31,32 +21,30 @@ export interface UpdateInfo {
   apkUrl?: string;
 }
 
+function semverCompare(a: string, b: string): number {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na > nb) return 1;
+    if (na < nb) return -1;
+  }
+  return 0;
+}
+
 export async function checkForUpdates(): Promise<UpdateInfo | null> {
   try {
     const currentVersion = await getAppVersion();
-    
     const response = await fetch(GITHUB_API);
     if (!response.ok) return null;
     const release = await response.json();
     const latestVersion = (release.tag_name || release.name).replace(/^v/, '');
 
-    if (latestVersion) {
-      // Proper semver comparison
-      const parseVer = (v: string) => v.split('.').map(Number);
-      const latestParts = parseVer(latestVersion);
-      const currentParts = parseVer(currentVersion);
-      let isNewer = false;
-      for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
-        const l = latestParts[i] || 0;
-        const c = currentParts[i] || 0;
-        if (l > c) { isNewer = true; break; }
-        if (l < c) { isNewer = false; break; }
-      }
-      if (isNewer) {
-        const apkAsset = release.assets?.find((a: any) =>
-          a.name?.endsWith('.apk') || a.content_type === 'application/vnd.android.package-archive'
-        );
-
+    if (latestVersion && semverCompare(latestVersion, currentVersion) > 0) {
+      const apkAsset = release.assets?.find((a: any) =>
+        a.name?.endsWith('.apk') || a.content_type === 'application/vnd.android.package-archive'
+      );
       return {
         hasUpdate: true,
         version: latestVersion,
@@ -130,3 +118,5 @@ export async function installApk(blob: Blob): Promise<boolean> {
     return false;
   }
 }
+
+export { semverCompare };
