@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getAppVersion, checkForUpdates, downloadApk, installApk } from '../updateChecker';
+import { getAppVersion, checkForUpdates, downloadApk, installApk, downloadApkViaRedirect } from '../updateChecker';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -21,6 +21,7 @@ export function UpdateModal() {
   const [downloaded, setDownloaded] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [error, setError] = useState('');
+  const [result, setResult] = useState<{ msg: string; type: string } | null>(null);
 
   useEffect(() => {
     if (dismissed) return;
@@ -41,40 +42,31 @@ export function UpdateModal() {
 
   const handleDownload = useCallback(async () => {
     if (!updateInfo?.apkUrl) return;
+    
+    // Try direct download with progress first
     setDownloading(true);
     setError('');
-
+    
     try {
       const blob = await downloadApk(updateInfo.apkUrl, (pct, spd) => {
         setProgress(pct);
         setSpeed(spd);
       });
-
-      if (!blob) {
-        setError('خطا در دانلود. لطفاً از طریق دکمه دستی اقدام کنید.');
-        setDownloading(false);
-        return;
+      
+      if (blob) {
+        setProgress(100);
+        setDownloaded(true);
+        setInstalling(true);
+        await installApk(blob);
       }
-
-      setProgress(100);
-      setDownloaded(true);
-      setInstalling(true);
-
-      const success = await installApk(blob);
-      if (success) {
-        setTimeout(() => {
-          setInstalling(false);
-          setShowModal(false);
-          setDismissed(true);
-        }, 2000);
-      } else {
-        setError('لطفاً فایل را از پوشه Downloads نصب کنید.');
-        setInstalling(false);
-      }
-    } catch (e: any) {
-      setError(e.message || 'خطا در دانلود');
-    }
+    } catch {}
+    
+    // If we got here, use redirect method (opens in browser)
     setDownloading(false);
+    setDownloaded(false);
+    downloadApkViaRedirect(updateInfo.apkUrl);
+    setResult({ msg: 'در حال دانلود... لطفاً پس از دانلود فایل را نصب کنید.', type: 'info' });
+    setTimeout(() => setShowModal(false), 2000);
   }, [updateInfo]);
 
   if (!showModal || dismissed) return null;

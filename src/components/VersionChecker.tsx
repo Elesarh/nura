@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { checkForUpdates, getAppVersion, downloadApk, installApk } from '../updateChecker';
+import { checkForUpdates, getAppVersion, downloadApkViaRedirect } from '../updateChecker';
 import { RefreshCw, Download, AlertTriangle, CheckCircle, X } from 'lucide-react';
 
 export function VersionChecker() {
@@ -35,14 +35,8 @@ export function VersionChecker() {
   const handleDownload = async () => {
     const info = await checkForUpdates();
     if (!info?.apkUrl) return;
-    setResult({ msg: 'در حال دانلود...', type: 'info' });
-    const blob = await downloadApk(info.apkUrl, () => {});
-    if (blob) {
-      await installApk(blob);
-      setResult({ msg: 'فایل دانلود شد. آن را باز کنید و نصب کنید.', type: 'success' });
-    } else {
-      setResult({ msg: 'خطا در دانلود', type: 'error' });
-    }
+    setResult({ msg: 'در حال دانلود... لطفاً پس از دانلود فایل را نصب کنید.', type: 'info' });
+    downloadApkViaRedirect(info.apkUrl);
   };
 
   return (

@@ -1,4 +1,4 @@
-const FALLBACK_VERSION = '0.1.6';
+const FALLBACK_VERSION = '0.1.8';
 
 export async function getAppVersion(): Promise<string> {
   try {
@@ -64,6 +64,20 @@ export async function checkForUpdates(): Promise<UpdateInfo | null> {
   }
 }
 
+// Open the APK download URL in a new tab — works around CORS issues
+export function downloadApkViaRedirect(url: string): void {
+  // Open in new tab to trigger browser download
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.download = 'NURA.apk';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Legacy download with progress (may not work due to CORS)
 export async function downloadApk(url: string, onProgress: (progress: number, speed: string) => void): Promise<Blob | null> {
   try {
     const response = await fetch(url);
@@ -82,7 +96,6 @@ export async function downloadApk(url: string, onProgress: (progress: number, sp
       if (done) break;
       chunks.push(value);
       received += value.length;
-
       if (total > 0) {
         const progress = Math.round((received / total) * 100);
         const elapsed = (Date.now() - startTime) / 1000;
@@ -93,10 +106,11 @@ export async function downloadApk(url: string, onProgress: (progress: number, sp
         onProgress(progress, speed);
       }
     }
-
     return new Blob(chunks, { type: 'application/vnd.android.package-archive' });
   } catch (e) {
-    console.warn('[Download] Failed:', e);
+    console.warn('[Download] Failed, falling back to redirect:', e);
+    // Fallback to redirect
+    downloadApkViaRedirect(url);
     return null;
   }
 }
