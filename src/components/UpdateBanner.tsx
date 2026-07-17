@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { APP_VERSION, checkForUpdates } from './updateChecker';
+import { APP_VERSION, checkForUpdates } from '../updateChecker';
 import { Button, Card } from './components';
 import { Download, X, RefreshCw, Package } from 'lucide-react';
 
