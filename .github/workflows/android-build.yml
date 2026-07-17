@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -52,34 +52,10 @@ jobs:
       - name: Copy web to Android
         run: npx cap copy android
 
-      - name: Set Android app icon
-        run: python3 scripts/set-android-icon.py android/app/src/main/res public/icons/icon-192.png
+      - name: Prepare Gradle fixes
+        run: python3 scripts/fix-android-build.py
 
-      - name: Fix Kotlin duplicates + signing
-        run: |
-          cd android
-          GRADLE_FILE="app/build.gradle"
-          sed -i '/kotlin-stdlib-jdk/d' "$GRADLE_FILE" 2>/dev/null || true
-          echo '' >> "$GRADLE_FILE"
-          echo "configurations.all {" >> "$GRADLE_FILE"
-          echo "    resolutionStrategy {" >> "$GRADLE_FILE"
-          echo "        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'" >> "$GRADLE_FILE"
-          echo "        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'" >> "$GRADLE_FILE"
-          echo "        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'" >> "$GRADLE_FILE"
-          echo "    }" >> "$GRADLE_FILE"
-          echo "}" >> "$GRADLE_FILE"
-          # Add signing config to app/build.gradle
-          echo '' >> "$GRADLE_FILE"
-          echo "android.signingConfigs {" >> "$GRADLE_FILE"
-          echo "    debug {" >> "$GRADLE_FILE"
-          echo "        storeFile file('../../keystore/nura-debug.keystore')" >> "$GRADLE_FILE"
-          echo "        storePassword 'nura123'" >> "$GRADLE_FILE"
-          echo "        keyAlias 'nura'" >> "$GRADLE_FILE"
-          echo "        keyPassword 'nura123'" >> "$GRADLE_FILE"
-          echo "    }" >> "$GRADLE_FILE"
-          echo "}" >> "$GRADLE_FILE"
-
-      - name: Set app version in Android
+      - name: Set app version
         run: |
           cd android
           VERSION_TAG="${GITHUB_REF_NAME#v}"
@@ -87,19 +63,9 @@ jobs:
           MINOR=$(echo "$VERSION_TAG" | cut -d. -f2)
           PATCH=$(echo "$VERSION_TAG" | cut -d. -f3)
           VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH + 100000))
-          sed -i "s/versionName \"[^\"]*\"/versionName \"$VERSION_TAG\"/" app/build.gradle
-          sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" app/build.gradle
+          sed -i 's/versionName "[^"]*"/versionName "'$VERSION_TAG'"/' app/build.gradle
+          sed -i 's/versionCode [0-9]*/versionCode '$VERSION_CODE'/' app/build.gradle
           echo "Version: $VERSION_TAG, Code: $VERSION_CODE"
-
-      - name: Fix signing config in build.gradle
-        run: |
-          cd android
-          GRADLE_FILE="app/build.gradle"
-          # Remove any previous signing config we added
-          sed -i '/nura-debug.keystore/d' "$GRADLE_FILE" 2>/dev/null || true
-          sed -i '/nura123/d' "$GRADLE_FILE" 2>/dev/null || true
-          # Add signing config INSIDE the android block (before closing })
-          sed -i '/^android {/a\    signingConfigs {\n        debug {\n            storeFile file("../../keystore/nura-debug.keystore")\n            storePassword "nura123"\n            keyAlias "nura"\n            keyPassword "nura123"\n        }\n    }' "$GRADLE_FILE" 2>/dev/null || true
 
       - name: Build Debug APK
         working-directory: ./android
