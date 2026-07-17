@@ -74,7 +74,7 @@ jobs:
           MAJOR=$(echo "$VERSION_TAG" | cut -d. -f1)
           MINOR=$(echo "$VERSION_TAG" | cut -d. -f2)
           PATCH=$(echo "$VERSION_TAG" | cut -d. -f3)
-          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH))
+          VERSION_CODE=$((MAJOR * 10000 + MINOR * 100 + PATCH + 100000))
           # Update app/build.gradle
           sed -i "s/versionName \"[^\"]*\"/versionName \"$VERSION_TAG\"/" app/build.gradle
           sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" app/build.gradle
