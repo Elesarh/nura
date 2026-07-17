@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { APP_VERSION, checkForUpdates, downloadApk, installApk } from '../updateChecker';
+import { getAppVersion, checkForUpdates, downloadApk, installApk } from '../updateChecker';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
 export function UpdateModal() {
+  const [currentVersion, setCurrentVersion] = useState('0.1.4');
   const [updateInfo, setUpdateInfo] = useState<{
     hasUpdate: boolean;
     version: string;
@@ -24,6 +25,8 @@ export function UpdateModal() {
   useEffect(() => {
     if (dismissed) return;
     const doCheck = async () => {
+      const ver = await getAppVersion();
+      setCurrentVersion(ver);
       const info = await checkForUpdates();
       setUpdateInfo(info);
       if (info?.hasUpdate) {
@@ -122,7 +125,7 @@ export function UpdateModal() {
                   <div className="flex items-center gap-3 mb-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
                     <AlertTriangle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                     <p className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">
-                      نسخه فعلی شما <span className="font-black">{APP_VERSION}</span> است. نسخه جدید با قابلیت‌های بیشتر و بهبودها آماده شده است.
+                      نسخه فعلی شما <span className="font-black">{currentVersion}</span> است. نسخه جدید با قابلیت‌های بیشتر و بهبودها آماده شده است.
                     </p>
                   </div>
 

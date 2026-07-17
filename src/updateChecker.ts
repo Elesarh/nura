@@ -1,21 +1,46 @@
-const APP_VERSION = '0.1.3';
+// Read version from Capacitor config injected at build time
+// Fallback: fetch version from the app's own manifest
+const FALLBACK_VERSION = '0.1.4';
+
+export async function getAppVersion(): Promise<string> {
+  try {
+    // Try reading from capacitor.config.json (available at runtime on web)
+    const resp = await fetch('/capacitor.config.json');
+    if (resp.ok) {
+      const config = await resp.json();
+      return config.version || FALLBACK_VERSION;
+    }
+  } catch {} // silent fallback
+  
+  // Try from meta tag or hardcoded
+  try {
+    const meta = document.querySelector('meta[name="app-version"]');
+    if (meta) return meta.getAttribute('content') || FALLBACK_VERSION;
+  } catch {}
+  
+  return FALLBACK_VERSION;
+}
 
 const GITHUB_REPO = 'Elesarh/nura';
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
 
-export async function checkForUpdates(): Promise<{
+export interface UpdateInfo {
   hasUpdate: boolean;
   version: string;
   url: string;
   apkUrl?: string;
-} | null> {
+}
+
+export async function checkForUpdates(): Promise<UpdateInfo | null> {
   try {
+    const currentVersion = await getAppVersion();
+    
     const response = await fetch(GITHUB_API);
     if (!response.ok) return null;
     const release = await response.json();
     const latestVersion = (release.tag_name || release.name).replace(/^v/, '');
 
-    if (latestVersion && latestVersion > APP_VERSION) {
+    if (latestVersion && latestVersion > currentVersion) {
       const apkAsset = release.assets?.find((a: any) =>
         a.name?.endsWith('.apk') || a.content_type === 'application/vnd.android.package-archive'
       );
@@ -24,11 +49,15 @@ export async function checkForUpdates(): Promise<{
         hasUpdate: true,
         version: latestVersion,
         url: apkAsset?.browser_download_url || release.html_url,
-        apkUrl: apkAsset?.browser_download_url || null,
+        apkUrl: apkAsset?.browser_download_url || undefined,
       };
     }
 
-    return { hasUpdate: false, version: APP_VERSION, url: '' };
+    return {
+      hasUpdate: false,
+      version: currentVersion,
+      url: '',
+    };
   } catch (e) {
     console.warn('[Update Check] Failed:', e);
     return null;
@@ -74,12 +103,11 @@ export async function downloadApk(url: string, onProgress: (progress: number, sp
 
 export async function installApk(blob: Blob): Promise<boolean> {
   try {
-    // For WebView/Capacitor: use FileSharer or save to downloads
-    // Try Web Share API first
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
+    const version = await getAppVersion();
     a.href = url;
-    a.download = `NURA-${APP_VERSION}.apk`;
+    a.download = `NURA-${version}.apk`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -90,5 +118,3 @@ export async function installApk(blob: Blob): Promise<boolean> {
     return false;
   }
 }
-
-export { APP_VERSION };
