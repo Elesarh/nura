@@ -22,6 +22,52 @@
     { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NURA Dashboard"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "NURA Mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "مدیریت محصولات",
+      "short_name": "محصولات",
+      "description": "مدیریت و مشاهده لیست محصولات",
+      "url": "/store/products",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "پایانه فروش",
+      "short_name": "فروش",
+      "description": "صفحه فروش و صدور فاکتور",
+      "url": "/store/sales",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "مشتریان",
+      "short_name": "مشتریان",
+      "description": "مدیریت مشتریان و بدهی‌ها",
+      "url": "/store/customers",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
