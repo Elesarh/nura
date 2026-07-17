@@ -41,7 +41,7 @@ jobs:
         run: npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
 
       - name: Init Capacitor
-        run: npx cap init NURA com.nura.app --web-dir dist --yes
+        run: npx cap init NURA com.nura.app --web-dir dist
 
       - name: Add Android
         run: npx cap add android
