@@ -15,10 +15,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps --ignore-scripts
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
       - name: Build
         run: npm run build
@@ -31,11 +33,11 @@ jobs:
           cp public/service-worker.js dist/
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: ./dist
-          production-branch: master
-          deploy-message: "Auto-deploy from GitHub"
+        run: |
+          # Install Netlify CLI
+          npm install -g netlify-cli
+          # Deploy directly
+          npx netlify deploy --dir=dist --prod --message "Auto-deploy from GitHub"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
