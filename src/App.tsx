@@ -691,7 +691,7 @@ export default function App() {
 function AppContent() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { sessionState, pendingDevice, approvePending, rejectPending } = useAdminSession(user);
 
   useEffect(() => {
