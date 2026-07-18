@@ -5,12 +5,6 @@
   "server": {
     "androidScheme": "https"
   },
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0,
-      "launchAutoHide": true
-    }
-  },
-  "version": "0.1.23",
-  "versionCode": 100123
+  "version": "0.1.24",
+  "versionCode": 100124
 }
