@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { checkForUpdates, getAppVersion, downloadApkViaRedirect } from '../updateChecker';
 import { RefreshCw, Download, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function VersionChecker() {
   const [version, setVersion] = useState('');
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Auto-dismiss result after 4 seconds
+  useEffect(() => {
+    if (result) {
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setResult(null), 4000);
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [result]);
 
   const handleClick = async () => {
     if (checking) return;
@@ -37,6 +48,8 @@ export function VersionChecker() {
     if (!info?.apkUrl) return;
     setResult({ msg: 'در حال دانلود... لطفاً پس از دانلود فایل را نصب کنید.', type: 'info' });
     downloadApkViaRedirect(info.apkUrl);
+    // Auto-clear after showing download message
+    setTimeout(() => setResult(null), 5000);
   };
 
   return (
@@ -59,7 +72,11 @@ export function VersionChecker() {
         <span>{checking ? 'در حال بررسی...' : 'بررسی آپدیت'}</span>
       </button>
       {result && (
-        <div className={`mt-2 p-2 rounded-lg text-[10px] font-medium flex items-center gap-1.5 ${
+        <motion.div 
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className={`mt-2 p-2 rounded-lg text-[10px] font-medium flex items-center gap-1.5 ${
           result.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' :
           result.type === 'error' ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400' :
           'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
@@ -73,7 +90,7 @@ export function VersionChecker() {
           <button onClick={() => setResult(null)} className="text-slate-400 hover:text-slate-600">
             <X className="w-3 h-3" />
           </button>
-        </div>
+        </motion.div>
       )}
     </div>
   );
