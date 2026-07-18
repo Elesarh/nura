@@ -766,9 +766,12 @@ function AppContent() {
 
   if (loading || (user && user.role === 'superadmin' && sessionState === 'loading')) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 ${isDarkMode ? 'bg-[#0B0531]' : 'bg-gray-50'}`}>
-        <LoadingAnimation size={80} />
-        <p className="text-xs text-slate-400 font-medium tracking-wide animate-pulse">در حال بارگذاری...</p>
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-6 ${isDarkMode ? 'bg-gradient-to-br from-[#0B0531] via-[#0f0f23] to-[#1a0533]' : 'bg-gradient-to-br from-[#0B0531] via-[#0f0f23] to-[#1a0533]'}`}>
+        <div className="relative flex items-center justify-center">
+          <div className="absolute inset-0 w-24 h-24 mx-auto bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+          <LoadingAnimation size={80} />
+        </div>
+        <p className="text-sm text-indigo-300/60 font-medium tracking-wide">در حال بارگذاری...</p>
       </div>
     );
   }
