@@ -1,15 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#000000"/>
-  <g transform="translate(256, 256)">
-    <!-- Three crescent arcs - the original NURA logo -->
-    <!-- Outer crescent -->
-    <path d="M0 -180 Q140 -180 170 -100 Q200 -40 200 40" 
-          stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round"/>
-    <!-- Middle crescent -->
-    <path d="M0 -110 Q100 -110 120 -50 Q140 10 140 50" 
-          stroke="#FFFFFF" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <!-- Inner crescent -->
-    <path d="M0 -50 Q50 -50 65 -20 Q65 15 65 45" 
-          stroke="#FFFFFF" stroke-width="10" fill="none" stroke-linecap="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Pure black background -->
+  <rect width="1024" height="1024" fill="#000000"/>
+  
+  <!-- Three concentric arcs using Arc (A) commands for perfect circular curves -->
+  <!-- Each arc is a portion of a circle, centered horizontally -->
+  
+  <!-- Outer arc: radius ~220, starts left, sweeps up and right -->
+  <path d="M292 440 A 220 220 0 0 1 732 440" 
+        stroke="#FFFFFF" stroke-width="24" fill="none" stroke-linecap="round"/>
+  
+  <!-- Middle arc: radius ~170 -->
+  <path d="M342 360 A 170 170 0 0 1 682 360" 
+        stroke="#FFFFFF" stroke-width="20" fill="none" stroke-linecap="round"/>
+  
+  <!-- Inner arc: radius ~120 -->
+  <path d="M392 285 A 120 120 0 0 1 632 285" 
+        stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round"/>
+  
+  <!-- Text -->
+  <text x="512" y="680" font-family="'SF Pro', Helvetica, Arial, sans-serif" 
+        font-size="64" font-weight="300" fill="#FFFFFF" 
+        text-anchor="middle" letter-spacing="12">NURA</text>
 </svg>
