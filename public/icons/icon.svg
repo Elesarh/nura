@@ -1,22 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0a0a"/>
-      <stop offset="100%" stop-color="#1a1a2e"/>
-    </linearGradient>
-  </defs>
-  
   <!-- Dark premium background -->
-  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="#0f0f23"/>
   
-  <!-- Stylized "N" letter - bold, centered, fills safe zone -->
-  <!-- Using thick angled paths for a modern geometric N -->
-  <g stroke="#FFFFFF" stroke-width="48" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <!-- Left vertical -->
-    <line x1="330" y1="250" x2="330" y2="750"/>
-    <!-- Diagonal -->
-    <line x1="330" y1="250" x2="694" y2="750"/>
-    <!-- Right vertical -->
-    <line x1="694" y1="250" x2="694" y2="750"/>
-  </g>
+  <!-- Bold white N letter - 3 thick strokes -->
+  <!-- Left vertical -->
+  <rect x="320" y="180" width="60" height="664" rx="12" fill="#FFFFFF"/>
+  <!-- Right vertical -->
+  <rect x="644" y="180" width="60" height="664" rx="12" fill="#FFFFFF"/>
+  <!-- Diagonal -->
+  <polygon points="380,180 644,840 584,840 320,180" fill="#FFFFFF"/>
 </svg>
