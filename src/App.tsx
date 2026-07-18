@@ -1,6 +1,6 @@
 import { translateError } from './lib/errorTranslator';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, createHashRouter, RouterProvider, createBrowserRouter } from 'react-router';
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode, useCallback } from 'react';
 import React from 'react';
 import { auth, db } from './firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -10,6 +10,8 @@ import { LoadingWidget, Button, TextField, Card, ErrorWidget } from './component
 import { Menu, X, Sun, Moon, LogOut, Store as StoreIcon, Shield, User as UserIcon, Phone, Mail, Bell, AlertTriangle, History, Trash2, Plus, Activity, Package, Users, ShoppingCart, Banknote, TrendingUp, Zap, Lock, Bot, Sparkles, Settings, PackageSearch, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logEvent } from './firebase';
+import { SplashScreen } from './components/SplashScreen';
+import { LoadingAnimation } from './components/LoadingAnimation';
 
 // Import Views
 import SuperAdminDashboard from './views/superadmin/Dashboard';
@@ -673,6 +675,12 @@ function AppRouter() {
 }
 
 export default function App() {
+  const [splashDone, setSplashDone] = useState(false);
+
+  if (!splashDone) {
+    return <SplashScreen onFinish={() => setSplashDone(true)} />;
+  }
+
   return (
     <Router>
       <AppRouter />
@@ -757,7 +765,12 @@ function AppContent() {
   }, []);
 
   if (loading || (user && user.role === 'superadmin' && sessionState === 'loading')) {
-    return <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}><LoadingWidget /></div>;
+    return (
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+        <LoadingAnimation size={80} />
+        <p className="text-sm text-slate-400 font-medium tracking-wide animate-pulse">در حال بارگذاری...</p>
+      </div>
+    );
   }
 
   if (user && user.role === 'superadmin' && sessionState === 'waiting_approval') {
