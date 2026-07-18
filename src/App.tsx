@@ -766,9 +766,9 @@ function AppContent() {
 
   if (loading || (user && user.role === 'superadmin' && sessionState === 'loading')) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 ${isDarkMode ? 'bg-[#0B0531]' : 'bg-gray-50'}`}>
         <LoadingAnimation size={80} />
-        <p className="text-sm text-slate-400 font-medium tracking-wide animate-pulse">در حال بارگذاری...</p>
+        <p className="text-xs text-slate-400 font-medium tracking-wide animate-pulse">در حال بارگذاری...</p>
       </div>
     );
   }
