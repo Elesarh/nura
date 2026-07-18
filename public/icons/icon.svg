@@ -1,12 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Dark premium background -->
-  <rect width="1024" height="1024" fill="#0f0f23"/>
-  
-  <!-- Bold white N letter - 3 thick strokes -->
-  <!-- Left vertical -->
-  <rect x="320" y="180" width="60" height="664" rx="12" fill="#FFFFFF"/>
-  <!-- Right vertical -->
-  <rect x="644" y="180" width="60" height="664" rx="12" fill="#FFFFFF"/>
-  <!-- Diagonal -->
-  <polygon points="380,180 644,840 584,840 320,180" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#000000"/>
+  <g transform="translate(256, 256)">
+    <!-- Three crescent arcs - the original NURA logo -->
+    <!-- Outer crescent -->
+    <path d="M0 -180 Q140 -180 170 -100 Q200 -40 200 40" 
+          stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <!-- Middle crescent -->
+    <path d="M0 -110 Q100 -110 120 -50 Q140 10 140 50" 
+          stroke="#FFFFFF" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <!-- Inner crescent -->
+    <path d="M0 -50 Q50 -50 65 -20 Q65 15 65 45" 
+          stroke="#FFFFFF" stroke-width="10" fill="none" stroke-linecap="round"/>
+  </g>
 </svg>
