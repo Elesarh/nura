@@ -5,6 +5,14 @@
   "server": {
     "androidScheme": "https"
   },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true,
+      "backgroundColor": "#000000",
+      "androidSplashResourceName": "splash"
+    }
+  },
   "version": "0.1.26",
   "versionCode": 100126
 }

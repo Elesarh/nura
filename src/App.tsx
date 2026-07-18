@@ -769,7 +769,7 @@ function AppContent() {
       <div className={`min-h-screen flex flex-col items-center justify-center gap-6 ${isDarkMode ? 'bg-gradient-to-br from-[#0B0531] via-[#0f0f23] to-[#1a0533]' : 'bg-gradient-to-br from-[#0B0531] via-[#0f0f23] to-[#1a0533]'}`}>
         <div className="relative flex flex-col items-center gap-6">
           <div className="absolute w-32 h-32 mx-auto bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
-          <LoadingAnimation size={70} />
+          <LoadingAnimation size={90} />
         </div>
         <p className="text-sm text-indigo-300/50 font-medium tracking-wide">در حال بارگذاری...</p>
       </div>
