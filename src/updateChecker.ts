@@ -1,4 +1,4 @@
-const FALLBACK_VERSION = '0.1.8';
+const FALLBACK_VERSION = '0.1.9';
 
 export async function getAppVersion(): Promise<string> {
   try {
