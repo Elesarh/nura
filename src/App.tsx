@@ -11,7 +11,6 @@ import { Menu, X, Sun, Moon, LogOut, Store as StoreIcon, Shield, User as UserIco
 import { motion, AnimatePresence } from 'framer-motion';
 import { logEvent } from './firebase';
 import { SplashScreen } from './components/SplashScreen';
-import { LoadingAnimation } from './components/LoadingAnimation';
 
 // Import Views
 import SuperAdminDashboard from './views/superadmin/Dashboard';
@@ -765,14 +764,7 @@ function AppContent() {
   }, []);
 
   if (loading || (user && user.role === 'superadmin' && sessionState === 'loading')) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-black">
-        <div className="flex flex-col items-center gap-6">
-          <LoadingAnimation size={90} />
-        </div>
-        <p className="text-xs text-indigo-400/60 font-medium tracking-wider">در حال بارگذاری...</p>
-      </div>
-    );
+    return <SplashScreen persist />;
   }
 
   if (user && user.role === 'superadmin' && sessionState === 'waiting_approval') {
