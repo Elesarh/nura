@@ -34,12 +34,12 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
       >
         <rect width="512" height="512" fill="transparent" />
         <g transform="translate(256, 256)">
-          <path d="M-150 30 Q0 130 150 30"
-                stroke="#FFFFFF" strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.9"/>
-          <path d="M-110 -10 Q0 80 110 -10"
-                stroke="#FFFFFF" strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.85"/>
-          <path d="M-70 -40 Q0 40 70 -40"
-                stroke="#FFFFFF" strokeWidth="9" fill="none" strokeLinecap="round" opacity="0.8"/>
+          <path d="M-110 10 Q0 95 110 10"
+                stroke="#FFFFFF" strokeWidth="16" fill="none" strokeLinecap="round" opacity="0.9"/>
+          <path d="M-80 -20 Q0 55 80 -20"
+                stroke="#FFFFFF" strokeWidth="13" fill="none" strokeLinecap="round" opacity="0.85"/>
+          <path d="M-50 -45 Q0 20 50 -45"
+                stroke="#FFFFFF" strokeWidth="10" fill="none" strokeLinecap="round" opacity="0.8"/>
         </g>
       </motion.svg>
 
