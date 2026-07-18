@@ -29,8 +29,44 @@ signing = (
     '    }\n\n'
 )
 
-# Replace first occurrence of 'android {'
 content = content.replace('android {', 'android {\n' + signing, 1)
+
+# Find debug buildType and add signing config
+# Look for "debug {" inside a buildTypes block
+build_types_pattern = r'(buildTypes\s*\{[^}]*debug\s*\{)'
+match = re.search(build_types_pattern, content, re.DOTALL)
+if match:
+    # Add signing config reference inside debug block
+    debug_block_end = match.end()
+    # Check if signingConfig already set
+    if 'signingConfig signingConfigs.debug' not in content:
+        # Insert after the debug { opening
+        insertion = '\n            signingConfig signingConfigs.debug\n'
+        # Find the position of the opening brace of debug block
+        debug_start = content.find('debug {', debug_block_end - 50)
+        if debug_start == -1:
+            debug_start = content.find('debug{', debug_block_end - 50)
+        if debug_start != -1:
+            brace_pos = content.index('{', debug_start) + 1
+            content = content[:brace_pos] + insertion + content[brace_pos:]
+            print('Added signingConfig to debug buildType')
+        else:
+            print('Could not find debug buildType opening brace')
+else:
+    print('No buildTypes.debug found, adding it')
+    # Add buildTypes block with debug signing
+    bt_block = (
+        '\n    buildTypes {\n'
+        '        debug {\n'
+        '            signingConfig signingConfigs.debug\n'
+        '        }\n'
+        '    }\n'
+    )
+    # Insert before closing of android block
+    last_brace = content.rfind('}')
+    if last_brace != -1:
+        content = content[:last_brace] + bt_block + content[last_brace:]
+        print('Added buildTypes block')
 
 # Add Kotlin resolution strategy at end
 resolution = (
@@ -48,12 +84,9 @@ with open(GRADLE_FILE, 'w') as f:
     f.write(content)
 
 print(f'Fixed {GRADLE_FILE}')
-sc_count = content.count('signingConfigs')
-print(f'signingConfigs references: {sc_count}')
-
+# Verify
 idx_android = content.index('android {')
 idx_sc = content.index('signingConfigs')
-if idx_sc > idx_android:
-    print('OK: signingConfigs is INSIDE android block')
-else:
-    print('WARNING: signingConfigs might be in wrong position')
+idx_signing_in_debug = 'signingConfig signingConfigs.debug' in content
+print(f'signingConfigs INSIDE android block: {idx_sc > idx_android}')
+print(f'signingConfig in buildTypes.debug: {idx_signing_in_debug}')
