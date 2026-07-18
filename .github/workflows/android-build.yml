@@ -42,8 +42,6 @@ jobs:
           cp public/manifest.json dist/
           cp public/service-worker.js dist/
           cp capacitor.config.json dist/
-          cp public/splash-logo.png dist/
-          cp public/loading.png dist/
 
       - name: Install Capacitor
         run: npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
