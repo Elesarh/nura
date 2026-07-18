@@ -766,7 +766,7 @@ function AppContent() {
 
   if (loading || (user && user.role === 'superadmin' && sessionState === 'loading')) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center gap-6 bg-[#0f0f23]`}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-black">
         <div className="flex flex-col items-center gap-6">
           <LoadingAnimation size={90} />
         </div>

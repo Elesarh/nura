@@ -21,7 +21,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   return (
     <motion.div
       className="fixed inset-0 z-[99999] flex flex-col items-center justify-center"
-      style={{ backgroundColor: '#0f0f23' }}
+      style={{ backgroundColor: '#000000' }}
       animate={{ opacity: isExiting ? 0 : 1 }}
       transition={{ duration: 0.6, ease: 'easeInOut' }}
     >
