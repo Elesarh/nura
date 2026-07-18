@@ -57,9 +57,6 @@ jobs:
       - name: Copy custom app icons to Android
         run: python3 scripts/copy-android-icons.py
 
-      - name: Remove native splash screen
-        run: python3 scripts/remove-native-splash.py
-
       - name: Prepare Gradle fixes
         run: python3 scripts/fix-android-build.py
 
