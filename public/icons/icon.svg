@@ -1,10 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
-  <rect width="360" height="480" fill="#000000"/>
-  <g fill="#FFFFFF">
-    <!-- Three nested crescent arcs -->
-    <path d="M180 60 Q255 60 295 130 Q335 200 335 270" stroke="#FFFFFF" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <path d="M180 120 Q240 120 270 180 Q300 240 300 290" stroke="#FFFFFF" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <path d="M180 170 Q220 170 245 215 Q270 260 270 300" stroke="#FFFFFF" stroke-width="8" fill="none" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#000000"/>
+  <g fill="#FFFFFF" transform="translate(256, 256)">
+    <!-- Safe area: using 160px radius for content (32px padding from 256) -->
+    <!-- Outer crescent -->
+    <path d="M0 -160 Q140 -160 170 -100 Q200 -40 200 40" 
+          stroke="#FFFFFF" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <!-- Middle crescent -->
+    <path d="M0 -110 Q100 -110 120 -50 Q140 10 140 50" 
+          stroke="#FFFFFF" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <!-- Inner crescent -->
+    <path d="M0 -50 Q50 -50 65 -20 Q65 15 65 45" 
+          stroke="#FFFFFF" stroke-width="9" fill="none" stroke-linecap="round"/>
   </g>
-  <text x="180" y="380" font-family="sans-serif" font-size="48" font-weight="300" fill="#FFFFFF" text-anchor="middle" letter-spacing="8">Nura</text>
 </svg>
